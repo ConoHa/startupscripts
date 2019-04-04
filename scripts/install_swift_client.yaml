@@ -1,0 +1,28 @@
+#cloud-config
+---
+write_files:
+  - content: |
+      export OS_USERNAME="$API_USERNAME"
+      export OS_TENANT_NAME="$API_TENANT_NAME"
+      export OS_PASSWORD="$API_PASSWORD"
+      export OS_AUTH_URL="$API_AUTH_URL"
+    owner: root:root
+    path: /root/keystonerc
+    permissions: '0644'
+
+runcmd:
+  - echo 'source /root/keystonerc' >> /root/.bashrc
+  - >-
+    curl https://bootstrap.pypa.io/get-pip.py -o /root/get-pip.py --tlsv1.2 ||
+    wget https://bootstrap.pypa.io/get-pip.py -O /root/get-pip.py
+  - sleep 1
+  - >-
+    python /root/get-pip.py pip==8.1.2 setuptools==0.9.8 --no-wheel ||
+    python3 /root/get-pip.py pip==8.1.2 setuptools==0.9.8 --no-wheel
+  - sleep 1
+  - >-
+    pip install python-keystoneclient ||
+    pip3 install python-keystoneclient
+  - >-
+    pip install python-swiftclient ||
+    pip3 install python-swiftclient
